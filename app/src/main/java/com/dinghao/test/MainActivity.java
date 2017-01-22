@@ -2,6 +2,8 @@ package com.dinghao.test;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -13,13 +15,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String TAG = "MainActivityttt";
     private TextView mText;
     private Button mButton;
-
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            MyApplication application = (MyApplication) getApplication();
+            AccessibilityNodeInfo info = application.getInfo();
+            if(info!=null){
+                Log.i(TAG, "onClick: "+info.toString());
+                recycle(application.getInfo());
+            }
+            handler.sendEmptyMessageDelayed(0,3000);
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
-
+        handler.sendEmptyMessage(0);
         startService(new Intent(MainActivity.this, MyAccessibility.class));
     }
 
@@ -33,12 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button:
-                MyApplication application = (MyApplication) getApplication();
-                AccessibilityNodeInfo info = application.getInfo();
-                if(info!=null){
-                    Log.i(TAG, "onClick: "+info.toString());
-                    recycle(application.getInfo());
-                }
+
                 break;
         }
     }
